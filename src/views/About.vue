@@ -2,66 +2,40 @@
   <div class="about">
     <h1 class="text-primary">{{ name }}</h1>
 
-    <!-- 上方搜尋欄 -->
-    <div class='container mb-3'>
-      <div class="row">
+    <!-- Button trigger modal -->
+<button @click='openModal' type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+  Launch demo modal
+</button>
 
-        <div class="col-md-3">
-
-          <div class="d-flex justify-content-between align-items-center bg-light">
-
-            <label for="subicon" class="px-3 mb-0 text-primary d-flex align-items-center text-barSecond">
-              <i class="fas fa-search"></i>
-            </label>
-
-            <input placeholder="請搜尋.." 　v-model='searchContent' id="subicon"
-              style="border:none; outline:none; background-color: transparent;" class="w-100 p-2">
-            <button class="btn btn-light rounded-0 py-2" 　@click='delText' v-if='searchContent'>
-              <i class="fas fa-times"></i>
-            </button>
-
-          </div>
-
-          <!-- <div class='suggestionsSection'>
-            <li v-for='item in suggestions' @click='confirmStore(item)' v-if='item.item.name !==searchContent'>
-              <i class="fas fa-search m-1"></i>
-              {{item.item.name}}
-            </li>
-          </div> -->
-        </div>
-
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
       </div>
     </div>
+  </div>
+</div>
 
-    <div class="container">
-      <div class="row">
-        <div class="col-md-4 col-6"  v-for="item in DataFilter_two">
 
-          <div class='card'>
-            <div class='title'>{{ item.title }}</div>
-            <h5 class='rate mb-0'>{{ item.rate }}</h5>
-            <hr>
-
-            <div class="imgBox">
-              <img alt="Photo not found" :src="item.img" />
-            </div>
-            <hr>
-            <div class="desc">
-              <p>
-                {{item.desc}}
-              </p>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
   </div>
 
 </template>
 
 <script>
 // import products from "../assets/db.json";
+import $ from 'jquery'
 
 export default {
   name: "ProductList",
@@ -73,98 +47,13 @@ export default {
     };
   },
   methods: {
-
-    // 點擊刪除輸入框
-    delText() {
-      this.searchContent = ''
+    openModal(){
+      console.log('bang');
+      $('#exampleModal').modal('show');
     },
-
-    // suggestions欄位、點擊搜索商家
-    // confirmStore(storeName) {
-
-    //   this.searchContent = storeName.item.name;
-
-    // },
-
   },
 
-  // computed: {
-  //   DataFilter() {
-  //     let alldatas = [];
 
-  //     this.items.forEach((item) => {
-  //       let eachData = {
-  //         title: item.title,
-  //         rate: item.rate,
-  //         img: require(`../assets/A/${item.img}`),
-  //         desc: item.description,
-  //       };
-
-  //       alldatas.push(eachData);
-  //     });
-
-  //     return alldatas;
-  //   },
-  //   DataFilter_two() {
-
-  //     let vm = this;
-  //       let sugList = [];
-
-  //       if (vm.searchContent == '') {
-  //         return vm.DataFilter;
-
-  //       } else {
-
-  //         for (let i = 0; i < vm.DataFilter.length; i++) {
-
-  //           var temp = '';
-  //           temp = vm.DataFilter[i].title;
-
-
-  //           if (temp.indexOf(vm.searchContent) != -1) {
-
-  //             sugList.push(vm.DataFilter[i]);
-
-  //           }
-
-  //         }
-
-  //         return sugList;
-
-  //       }
-
-    
-  //   },
-
-  //   suggestions() {
-  //       let vm = this;
-  //       let sugList = [];
-
-  //       if (vm.searchContent == '') {
-  //         return '';
-
-  //       } else {
-
-  //         for (let i = 0; i < vm.items.length; i++) {
-
-  //           var temp = '';
-  //           temp = vm.items[i].title;
-
-
-  //           if (temp.indexOf(vm.searchContent) != -1) {
-
-  //             sugList.push(vm.items[i]);
-
-  //           }
-
-  //         }
-
-  //         return sugList;
-
-  //       }
-
-  //     },
-  // },
 };
 </script>
 
@@ -213,27 +102,5 @@ export default {
   height: 500px;
 
 }
-
-
-
-/* .suggestionsSection {
-    position: absolute;
-    color: black;
-    z-index: 10;
-    width: 535px;
-    max-height: 150px;
-    overflow: auto;
-  }
-
-  li {
-    list-style: none;
-    text-align: start;
-    padding: 5px;
-    cursor: pointer;
-  }
-
-  li:hover {
-    background-color: rgba(121, 133, 171)
-  } */
 
 </style>

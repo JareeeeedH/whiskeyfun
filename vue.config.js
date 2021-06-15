@@ -1,3 +1,16 @@
+const webpack = require("webpack");
+
+
 module.exports = {
-  publicPath: '/whiskeyfun/'
+  publicPath: '/whiskeyfun/',
+  configureWebpack: {
+    plugins: [
+      new webpack.ProvidePlugin({
+        $: "jquery",
+        jQuery: "jquery",
+        "window.jQuery": "jquery",
+        Popper: ["popper.js", "default"]
+      })
+    ]
+  }
 }
