@@ -1,8 +1,7 @@
 <template>
   <div class="about">
-    <h1 style="color:#669ccc; font-weight: 800;" class="m-3">{{ name }}</h1>
+    <h1>Whisky Fun</h1>
 
-  
     <!-- 上方搜尋欄 -->
     <div class="container-fluid mb-3">
       <div class="row">
@@ -20,18 +19,11 @@
             <input
               placeholder="請搜尋名稱.."
               @keyup.enter="search"
-              　v-model="searchContent"
+            　v-model="searchContent"
               id="titleInput"
               style="border:none; outline:none; background-color: transparent;"
               class="w-100 p-2"
             />
-            <button
-              class="btn btn-light rounded-0 py-2"
-              　@click="delText"
-              v-if="searchContent"
-            >
-              <i class="fas fa-times"></i>
-            </button>
           </div>
         </div>
       </div>
@@ -57,13 +49,6 @@
               style="border:none; outline:none; background-color: transparent;"
               class="w-100 p-2"
             />
-            <button
-              class="btn btn-light rounded-0 py-2"
-              　@click="delText_points"
-              v-if="searchContent_points"
-            >
-              <i class="fas fa-times"></i>
-            </button>
           </div>
         </div>
       </div>
@@ -72,7 +57,6 @@
         <div class="col-md-2">
           <button class="btn btn-primary" @click="search">
             Go!
-            <i class="fas fa-spinner fa-spin" v-if="loading == true"></i>
           </button>
         </div>
 
@@ -89,30 +73,37 @@
 
         <div class="col-md-4 margin-left-auto">
           <div style="text-align:right">
-            <h1>共有{{ rendering.length }}筆搜尋</h1>
+            <h1>共有{{ this.rendering.length}}筆搜尋</h1>
           </div>
         </div>
+
       </div>
     </div>
 
     <div class="container-fluid">
       <div class="row">
-        <div class="col-md-12 col-12" v-for="item in rendering">
+        <div class="col-md-12 col-12" v-for="item in rendering" :key='item.id'>
           <div class="card">
             <div class="title d-flex flex-column">
-              <h1>{{ item.nameTitle[0] }}</h1>
-              <h1>({{ item.nameTitle[1] }}</h1>
+              <h1>
+                {{ item.mainTitle }} <button @click='addToLocalStorage(item)' class='addBtn'>RECORD</button> 
+              </h1>
+              <h1>{{ item.subTitle }}</h1>
             </div>
 
             <div class="row p-3">
               <div class="col-md-2 d-flex flex-column justify-content-center align-items-center">
-                <img v-lazy="item.img" />
+                <img v-lazy="item.imgSrc" />
                 <p class="score">
-                  {{ item.ScoreTitle[0] }} - {{ item.ScoreTitle[1] }}
+
+                  {{ item.scores}}
+                  <!-- points:{{ item.points }}
+                  <br>
+                  {{ item.SGP }} -->
                 </p>
 
-                <button @click='openModal(item.nameTitle[0], item.NOTE)' type="button" class="d-md-none btn btn-primary">
-                查看評論
+                <button @click='openModal(item.mainTitle, item.NOTE)' type="button" class="d-md-none btn btn-primary">
+                  查看評論
                 </button>
 
               </div>
@@ -126,76 +117,81 @@
       </div>
     </div>
 
+        <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title bg-Main" id="exampleModalLabel">{{modalTitle}}</h1>
+            <button type="button" class="close" data-dismiss="modal">
+              <span>&times;</span>
+            </button>
+          </div>
 
-    <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title bg-Main" id="exampleModalLabel">{{modalTitle}}</h1>
-        <button type="button" class="close" data-dismiss="modal">
-          <span>&times;</span>
-        </button>
-      </div>
+          <div class="modal-body modealText">
+            {{ modalNote}}
+          </div>
 
-      <div class="modal-body modealText">
-        {{ modalNote}}
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
-
 
   </div>
+
 </template>
+
 
 <script>
 // import $ from 'jquery'
 
-import HelloWorld from "@/components/HelloWorld.vue";
-import products from "../assets/WhiskyFun.json";
 
 export default {
-  name: "Home",
-  components: { HelloWorld },
-  data() {
+   data(){
     return {
-      items: Object.values(products),
-      name: "Whisky Fun",
-      searchContent: "",
-      searchContent_points: "",
+      name: 'whiskyFun',
+      searchContent:'',
+      searchContent_points:'',
 
       matched_Points: null,
       matched_Title: null,
 
-      modalTitle: '',
-      modalNote: '',
+      modalTitle:'',
+      modalNote:'',
 
       rendering: [],
-
-      loading: false,
-    };
+    }
   },
-  methods: {
-    delText() {
-      this.searchContent = "";
-    },
-    delText_points() {
-      this.searchContent_points = "";
-    },
-    openModal(title, note){
-      this.modalTitle = title;
-      this.modalNote = note
-      $('#exampleModal').modal('show');
+
+  computed:{
+    funDataList(){
+
+      return this.$store.getters.dataList.map( (item) =>{
+        
+        let temp={
+          id: item.id,
+          mainTitle: item.mainTitle,
+          subTitle: item.subTitle,
+          imgSrc: item.imgSrc,
+          points: parseInt(item.points),
+          SGP: item.SGP,
+          scores: item.score,
+          NOTE: item.note,
+          
+        };
+        return temp;
+      })
     },
 
-    search() {
-      // 兩個空白、return
-      if (!this.searchContent.trim() && !this.searchContent_points) {
+  },
+
+  methods:{
+    search(){
+
+       // 兩個空白、return
+       if (!this.searchContent.trim() && !this.searchContent_points) {
         console.log("兩個空白: StopSearching");
         alert("請搜尋名稱或者分數..");
         return;
@@ -205,256 +201,102 @@ export default {
       else if (!this.searchContent.trim() && this.searchContent_points) {
         this.matched_Points = null;
         this.matched_Title = null;
-
         this.matched_Points = this.searchContent_points;
-        this.loading = true;
+        let filterList = [];
 
-        let resultObjList = [];
-        this.items.forEach((item, index) => {
-          let points = parseInt(item.SCORE.split(" - ")[1]);
-          if (points == Number(this.searchContent_points)) {
-            resultObjList.push(item);
+        this.funDataList.forEach( (item) =>{
+          if(Number(item.points) == Number(this.searchContent_points)){
+            filterList.push(item)
           }
-        });
-
-        let targetList = [];
-
-        for (let i = 0; i < resultObjList.length; i++) {
-          let img = null;
-          // Name
-          let NameSplit = resultObjList[i].NAME.split("(");
-          // Score
-          let ScoreSplit = resultObjList[i].SCORE.split(" - ");
-          let Scorepoints = parseInt(resultObjList[i].SCORE.split(" - ")[1]);
-
-          let eachData = {
-            NAME: resultObjList[i].NAME,
-            nameTitle: NameSplit,
-            SCORE: resultObjList[i].SCORE,
-            ScoreTitle: ScoreSplit,
-            img: img,
-            NOTE: resultObjList[i].NOTE,
-          };
-
-          targetList.push(eachData);
-        }
-
-        this.rendering = targetList;
-        this.searchContent_points = "";
-
-        // loading關閉
-        setTimeout(() => {
-          this.loading = false;
-          console.log(this.loading);
-        }, 10);
-        console.log("搜分數");
+        })
+        this.rendering = filterList;
       }
 
-      //  只搜title;
-      // 3個字以上有圖片
+      // 只搜名稱、
       else if (this.searchContent.trim() && !this.searchContent_points) {
-        if (this.searchContent.trim().length >= 3) {
-          this.matched_Points = null;
-          this.matched_Title = null;
+        this.matched_Points = null;
+        this.matched_Title = null;
 
-          this.matched_Title = this.searchContent;
-          let vm = this;
-          let resultObjList = [];
+        this.matched_Points = null;
+        this.matched_Title = this.searchContent;
+        let filterList = [];
 
-          for (let i = 0; i < this.items.length; i++) {
-            let temp = this.items[i].NAME.toLowerCase();
+        this.funDataList.forEach( (item) =>{
 
-            if (temp.indexOf(vm.searchContent.toLowerCase().trim()) != -1) {
-              resultObjList.push(vm.items[i]);
-            }
+          let temp = item.mainTitle.toLowerCase();
+
+          if(temp.indexOf(this.searchContent.toLowerCase()) != -1){
+            filterList.push(item)
           }
+        })
 
-          let targetList = [];
-          for (let i = 0; i < resultObjList.length; i++) {
-            let img = null;
+        this.rendering = filterList;
 
-            let imgUrl = resultObjList[i].IMAGE_PATH.split("/")[1];
-            let imgFile = imgUrl.split("")[0];
-
-            try {
-              img = require(`../assets/whiskyfun/${imgFile}/${imgUrl}`);
-            } catch (err) {
-              img = require("../assets/error.jpg");
-            }
-
-            // Name
-            let NameSplit = resultObjList[i].NAME.split("(");
-            // Score
-            let ScoreSplit = resultObjList[i].SCORE.split(" - ");
-            let Scorepoints = parseInt(resultObjList[i].SCORE.split(" - ")[1]);
-
-            let eachData = {
-              NAME: resultObjList[i].NAME,
-              nameTitle: NameSplit,
-              SCORE: resultObjList[i].SCORE,
-              ScoreTitle: ScoreSplit,
-              img: img,
-              NOTE: resultObjList[i].NOTE,
-            };
-
-            targetList.push(eachData);
-          }
-
-          this.rendering = targetList;
-          this.searchContent = "";
-          console.log("只搜Title; >= 3");
-        } else {
-          this.matched_Points = null;
-          this.matched_Title = null;
-
-          this.matched_Title = this.searchContent;
-          let vm = this;
-          let resultObjList = [];
-
-          for (let i = 0; i < this.items.length; i++) {
-            let temp = this.items[i].NAME.toLowerCase();
-
-            if (temp.indexOf(vm.searchContent.toLowerCase().trim()) != -1) {
-              resultObjList.push(vm.items[i]);
-            }
-          }
-
-          let targetList = [];
-          for (let i = 0; i < resultObjList.length; i++) {
-            let img = null;
-            // Name
-            let NameSplit = resultObjList[i].NAME.split("(");
-            // Score
-            let ScoreSplit = resultObjList[i].SCORE.split(" - ");
-            let Scorepoints = parseInt(resultObjList[i].SCORE.split(" - ")[1]);
-
-            let eachData = {
-              NAME: resultObjList[i].NAME,
-              nameTitle: NameSplit,
-              SCORE: resultObjList[i].SCORE,
-              ScoreTitle: ScoreSplit,
-              img: img,
-              NOTE: resultObjList[i].NOTE,
-            };
-
-            targetList.push(eachData);
-          }
-
-          this.rendering = targetList;
-          this.searchContent = "";
-          console.log("只搜Title; < 3");
-        }
       }
-      // 兩個都搜尋
+
+      // 搜名稱、與分數
       else if (this.searchContent.trim() && this.searchContent_points) {
-        let vm = this;
+        this.matched_Points = null;
+        this.matched_Title = null;
 
         this.matched_Points = this.searchContent_points;
         this.matched_Title = this.searchContent;
+        let filterList = [];
 
-        let resultObjList = [];
-        this.items.forEach((item, index) => {
-          let points = parseInt(item.SCORE.split(" - ")[1]);
-          let temp = item.NAME.toLowerCase();
+        this.funDataList.forEach( (item) =>{
 
-          if (
-            temp.indexOf(vm.searchContent.toLowerCase().trim()) != -1 &&
-            points == Number(this.searchContent_points)
-          ) {
-            resultObjList.push(item);
+          let temp = item.mainTitle.toLowerCase();
+
+          if(temp.indexOf(this.searchContent.toLowerCase()) != -1 && Number(item.points) == Number(this.searchContent_points)){
+
+            filterList.push(item)
+
           }
-        });
-
-        let targetList = [];
-
-        for (let i = 0; i < resultObjList.length; i++) {
-          let img = null;
-
-          let imgUrl = resultObjList[i].IMAGE_PATH.split("/")[1];
-          let imgFile = imgUrl.split("")[0];
-
-          try {
-            img = require(`../assets/whiskyfun/${imgFile}/${imgUrl}`);
-          } catch (err) {
-            img = require("../assets/loading.png");
-          }
-
-          // Name
-          let NameSplit = resultObjList[i].NAME.split("(");
-          // Score
-          let ScoreSplit = resultObjList[i].SCORE.split(" - ");
-          let Scorepoints = parseInt(resultObjList[i].SCORE.split(" - ")[1]);
-
-          let eachData = {
-            NAME: resultObjList[i].NAME,
-            nameTitle: NameSplit,
-            SCORE: resultObjList[i].SCORE,
-            ScoreTitle: ScoreSplit,
-            img: img,
-            NOTE: resultObjList[i].NOTE,
-          };
-
-          targetList.push(eachData);
-        }
-
-        this.rendering = targetList;
-
-        this.searchContent_points = "";
-        this.searchContent = "";
-        console.log("兩個都搜尋");
-      } else {
-        alert("搜尋無效");
+        })
+        this.rendering = filterList;
       }
     },
 
-    beginData() {
-      let randomList = [];
+    // 隨機取五個。
+    getRandom(){
+      
+      let randomItems = [];
 
-      for (let i = 0; i < 3; i++) {
-        let randomNum = parseInt(Math.random() * this.items.length);
-
-        let imgUrl = this.items[randomNum].IMAGE_PATH.split("/")[1];
-        let imgFile = imgUrl.split("")[0];
-        let img = null;
-        try {
-          img = require(`../assets/whiskyfun/${imgFile}/${imgUrl}`);
-        } catch (err) {
-          img = require("../assets/loading.png");
-        }
-
-        // Name
-        let NameSplit = this.items[randomNum].NAME.split("(");
-
-        // Score
-        let ScoreSplit = this.items[randomNum].SCORE.split(" - ");
-        let Scorepoints = parseInt(this.items[randomNum].SCORE.split(" - ")[1]);
-
-        let eachData = {
-          NAME: this.items[randomNum].NAME,
-
-          nameTitle: NameSplit,
-          SCORE: this.items[randomNum].SCORE,
-          ScoreTitle: ScoreSplit,
-          img: img,
-          NOTE: this.items[randomNum].NOTE,
-        };
-
-        randomList.push(eachData);
+      for( let i=0; i< 5; i++){
+        let ranNumber = Math.floor(Math.random()*this.funDataList.length);
+        randomItems.push(this.funDataList[ranNumber])
       }
-
-      this.rendering = randomList;
+      this.rendering = randomItems;
     },
+
+    openModal(title, note){
+      this.modalTitle = title;
+      this.modalNote = note;
+      $('#exampleModal').modal('show');
+    },
+    addToLocalStorage(item){
+      this.$store.dispatch('ADD_LOVED_LIST', item);
+      alert('已加入')
+    }
   },
 
-  created() {
-    this.beginData();
+  created(){
+    // this.$store.dispatch('GET_LOCAL_DATA');
+
+    this.$store.dispatch("GET_JSON_DATA");
+
+    setTimeout( () =>{
+      this.getRandom();
+    }, 1500)
+
   },
+
 };
 </script>
 
 <style>
 * {
-  font-family: "Roboto", sans-serif;
+  /* font-family: "Roboto", sans-serif; */
   position: relative;
   margin: 0;
   padding: 0;
@@ -519,5 +361,18 @@ h5,
 img:hover {
   transform: scale(2);
   transition: 0.2s;
+}
+
+.addBtn{
+  border:none;
+  text-decoration: none;
+  border-radius: 200px;
+  font-size: 0.75rem;
+  padding: 5px;
+  background: white;
+}
+.addBtn:hover{
+  background: green;
+  color: white;
 }
 </style>
