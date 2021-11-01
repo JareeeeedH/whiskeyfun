@@ -9,7 +9,6 @@ Vue.use(VueAxios, axios)
 
 let api = 'https://raw.githubusercontent.com/JareeeeedH/fundata/master/WhiskyFun.json';
 
-
 let getLS = function(){
   let lsData =   JSON.parse(window.localStorage.getItem('wineRecord')) || [];
   return lsData;
@@ -21,23 +20,6 @@ let saveLS = function(data){
 
 };
 
-// let setLS = function(){
-
-//   let datas = getLS();
-//   let dataToAdd = [{
-//     "id": 7064,
-//     "mainTitle": "Demerara 23 yo 1989/2012",
-//     "subTitle": "(45%, Rum Nation, Guyana)",
-//     "imgSrc": "https://raw.githubusercontent.com/JareeeeedH/fundata/master/whiskyfun/D/Demerara-23-yo-1989-Rum-Nation.jpg",
-//     "points": null,
-//     "SGP": "SGP:663",
-//     "scores": "SGP:663 - around 87 points",
-//   }]
-//   window.localStorage.setItem('wineRecord', JSON.stringify(dataToAdd))
-
-// };
-
-
 export default new Vuex.Store({
   state: {
     funData: [],
@@ -48,9 +30,14 @@ export default new Vuex.Store({
   actions:{
     GET_JSON_DATA(context){
 
+      let dataList = {};
+
       axios.get(api).then((response) => {
-        context.commit('SET_DATA', response.data)
+        context.commit('SET_DATA', response.data);
+        dataList = response.data;
+        return dataList;
       })
+
 
     },    
 
@@ -65,7 +52,6 @@ export default new Vuex.Store({
       localData.push(playload);
       context.commit('SET_LOCAL_DATA',localData);
     },
-
     DEL_LOVED_LIST(context, playload){
 
       let localData = getLS();

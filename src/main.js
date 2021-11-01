@@ -7,6 +7,11 @@ import axios from 'axios'
 import VueAxios from 'vue-axios'
 Vue.use(VueAxios, axios)
 
+
+import VueAwesomeSwiper from 'vue-awesome-swiper'
+import 'swiper/css/swiper.css'
+Vue.use(VueAwesomeSwiper)
+
 // import "jquery";
 import "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";

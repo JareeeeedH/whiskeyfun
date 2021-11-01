@@ -1,6 +1,6 @@
 <template>
   <div class="about">
-    <h1>Whisky Fun</h1>
+    <h1>WhiskyFun</h1>
 
     <!-- 上方搜尋欄 -->
     <div class="container-fluid mb-3">
@@ -80,7 +80,7 @@
       </div>
     </div>
 
-    <div class="container-fluid">
+    <div class="container-fluid" v-if='searched === true'>
       <div class="row">
         <div class="col-md-12 col-12" v-for="item in rendering" :key='item.id'>
           <div class="card">
@@ -95,11 +95,7 @@
               <div class="col-md-2 d-flex flex-column justify-content-center align-items-center">
                 <img v-lazy="item.imgSrc" />
                 <p class="score">
-
                   {{ item.scores}}
-                  <!-- points:{{ item.points }}
-                  <br>
-                  {{ item.SGP }} -->
                 </p>
 
                 <button @click='openModal(item.mainTitle, item.NOTE)' type="button" class="d-md-none btn btn-primary">
@@ -116,6 +112,32 @@
         </div>
       </div>
     </div>
+    
+    <div class='carousel-container' v-else>
+      <div class="carousel">
+        <swiper class="swiper" :options="swiperOption">
+          <!-- img render here -->
+          <swiper-slide v-for="(img,index) in rendering" :key="index">
+            <img :src="img.imgSrc" alt="">
+            <h3> {{img.mainTitle}} </h3>
+          </swiper-slide>
+
+
+          <div class="swiper-pagination" slot="pagination"></div>
+          <div class="swiper-button-prev" slot="button-prev"></div>
+          <div class="swiper-button-next" slot="button-next"></div>
+        </swiper>
+      </div>
+
+      <ul class='carousel-list'>
+        <li class='each-carousel' v-for="(img,index) in rendering" :key="index">
+          {{ img.mainTitle}}
+        </li>
+      </ul>
+    </div>
+
+
+
 
         <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1">
@@ -162,6 +184,24 @@ export default {
       modalNote:'',
 
       rendering: [],
+      
+      searched: false,
+
+
+      swiperOption: {
+          autoplay:false,
+          effect : 'cube',
+          mousewheel: true,
+          keyboard : true,
+          pagination: {
+            el: '.swiper-pagination',
+            type: 'progressbar'
+          },
+          navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev'
+          }
+        },
     }
   },
 
@@ -255,6 +295,11 @@ export default {
         })
         this.rendering = filterList;
       }
+
+      
+      //搜尋過
+      this.searched = true;
+
     },
 
     // 隨機取五個。
@@ -283,36 +328,19 @@ export default {
   created(){
     // this.$store.dispatch('GET_LOCAL_DATA');
 
-    this.$store.dispatch("GET_JSON_DATA");
-
-    setTimeout( () =>{
-      this.getRandom();
-    }, 1500)
+    this.$store.dispatch("GET_JSON_DATA").then((data)=>{
+       
+       setTimeout(()=>{
+         this.getRandom();
+       },2000)
+    })
 
   },
 
 };
 </script>
 
-<style>
-* {
-  /* font-family: "Roboto", sans-serif; */
-  position: relative;
-  margin: 0;
-  padding: 0;
-}
-h1,
-h2,
-h3,
-h4,
-h5,
-.h1,
-.h2,
-.h3,
-.h4,
-.h5 {
-  margin: 0;
-}
+<style >
 
 .card {
   padding: 5px;
@@ -344,22 +372,25 @@ h5,
   font-size: 25px;
   font-weight: 600;
   margin: 0;
+  color: #121212;
 }
 
 .modealText{
   font-size: 20px;
   font-weight: bolder;
-  text-align: left
+  text-align: left;
+  color: #121212;
 }
 
 .score {
   font-size: 25px;
   font-weight: bolder;
   margin-top: 10px;
+  color: #121212;
 }
 
 img:hover {
-  transform: scale(2);
+  transform: scale(1.25);
   transition: 0.2s;
 }
 
@@ -375,4 +406,46 @@ img:hover {
   background: green;
   color: white;
 }
+
+.carousel-container{
+  display: flex;
+}
+
+.carousel{
+  height: 70vh;
+  width: 50%;
+}
+
+.carousel-list{
+  width: 35%;
+  padding: 0 2rem;
+  list-style: none;
+  text-align: start;
+}
+
+.each-carousel{
+  font-size: 1.5rem;
+  padding:0.5rem;
+  border-bottom: 2px solid white;
+}
+
+.swiper{
+  width: 100%;
+  height: 70%;
+}
+
+.carousel img{
+  height: 80%;
+}
+
+@media (max-width:768px){
+    .carousel{
+      height: 70vh;
+      width: 100%;
+    }
+
+    .carousel-list{
+      display: none;
+    }
+  }
 </style>
