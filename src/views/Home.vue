@@ -19,7 +19,7 @@
             <input
               placeholder="請搜尋名稱.."
               @keyup.enter="search"
-            　v-model="searchContent"
+              　v-model="searchContent"
               id="titleInput"
               style="border:none; outline:none; background-color: transparent;"
               class="w-100 p-2"
@@ -73,35 +73,42 @@
 
         <div class="col-md-4 margin-left-auto">
           <div style="text-align:right">
-            <h1>共有{{ this.rendering.length}}筆搜尋</h1>
+            <h1>共有{{ this.rendering.length }}筆搜尋</h1>
           </div>
         </div>
-
       </div>
     </div>
 
-    <div class="container-fluid" v-if='searched === true'>
+    <div class="container-fluid" v-if="searched === true">
       <div class="row">
-        <div class="col-md-12 col-12" v-for="item in rendering" :key='item.id'>
+        <div class="col-md-12 col-12" v-for="item in rendering" :key="item.id">
           <div class="card">
             <div class="title d-flex flex-column">
               <h1>
-                {{ item.mainTitle }} <button @click='addToLocalStorage(item)' class='addBtn'>RECORD</button> 
+                {{ item.mainTitle }}
+                <button @click="addToLocalStorage(item)" class="addBtn">
+                  RECORD
+                </button>
               </h1>
               <h1>{{ item.subTitle }}</h1>
             </div>
 
             <div class="row p-3">
-              <div class="col-md-2 d-flex flex-column justify-content-center align-items-center">
+              <div
+                class="col-md-2 d-flex flex-column justify-content-center align-items-center"
+              >
                 <img v-lazy="item.imgSrc" />
                 <p class="score">
-                  {{ item.scores}}
+                  {{ item.scores }}
                 </p>
 
-                <button @click='openModal(item.mainTitle, item.NOTE)' type="button" class="d-md-none btn btn-primary">
+                <button
+                  @click="openModal(item.mainTitle, item.NOTE)"
+                  type="button"
+                  class="d-md-none btn btn-primary"
+                >
                   查看評論
                 </button>
-
               </div>
 
               <div class="col-md-10 d-none d-md-block">
@@ -112,16 +119,15 @@
         </div>
       </div>
     </div>
-    
-    <div class='carousel-container' v-else>
+
+    <div class="carousel-container" v-else>
       <div class="carousel">
         <swiper class="swiper" :options="swiperOption">
           <!-- img render here -->
-          <swiper-slide v-for="(img,index) in rendering" :key="index">
-            <img :src="img.imgSrc" alt="">
-            <h3> {{img.mainTitle}} </h3>
+          <swiper-slide v-for="(img, index) in rendering" :key="index">
+            <img :src="img.imgSrc" alt="" />
+            <h3>{{ img.mainTitle }}</h3>
           </swiper-slide>
-
 
           <div class="swiper-pagination" slot="pagination"></div>
           <div class="swiper-button-prev" slot="button-prev"></div>
@@ -129,88 +135,92 @@
         </swiper>
       </div>
 
-      <ul class='carousel-list'>
-        <li class='each-carousel' v-for="(img,index) in rendering" :key="index">
-          {{ img.mainTitle}}
+      <ul class="carousel-list">
+        <li
+          class="each-carousel"
+          v-for="(img, index) in rendering"
+          :key="index"
+        >
+          {{ img.mainTitle }}
         </li>
       </ul>
     </div>
 
-
-
-
-        <!-- Modal -->
+    <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title bg-Main" id="exampleModalLabel">{{modalTitle}}</h1>
+            <h1 class="modal-title bg-Main" id="exampleModalLabel">
+              {{ modalTitle }}
+            </h1>
             <button type="button" class="close" data-dismiss="modal">
               <span>&times;</span>
             </button>
           </div>
 
           <div class="modal-body modealText">
-            {{ modalNote}}
+            {{ modalNote }}
           </div>
 
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
           </div>
         </div>
       </div>
     </div>
-
   </div>
-
 </template>
-
 
 <script>
 // import $ from 'jquery'
 
-
 export default {
-   data(){
+  data() {
     return {
-      name: 'whiskyFun',
-      searchContent:'',
-      searchContent_points:'',
+      name: "whiskyFun",
+      searchContent: "",
+      searchContent_points: "",
 
       matched_Points: null,
       matched_Title: null,
 
-      modalTitle:'',
-      modalNote:'',
+      modalTitle: "",
+      modalNote: "",
+
+      isDoubleSearch: "",
 
       rendering: [],
-      
+
       searched: false,
 
-
       swiperOption: {
-          autoplay:false,
-          effect : 'cube',
-          mousewheel: true,
-          keyboard : true,
-          pagination: {
-            el: '.swiper-pagination',
-            type: 'progressbar'
-          },
-          navigation: {
-            nextEl: '.swiper-button-next',
-            prevEl: '.swiper-button-prev'
-          }
+        autoplay: false,
+        effect: "cube",
+        mousewheel: true,
+        keyboard: true,
+        pagination: {
+          el: ".swiper-pagination",
+          type: "progressbar",
         },
-    }
+        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev",
+        },
+      },
+    };
   },
 
-  computed:{
-    funDataList(){
-
-      return this.$store.getters.dataList.map( (item) =>{
-        
-        let temp={
+  computed: {
+    funDataList() {
+      return this.$store.getters.dataList.map((item) => {
+        let temp = {
           id: item.id,
           mainTitle: item.mainTitle,
           subTitle: item.subTitle,
@@ -219,21 +229,56 @@ export default {
           SGP: item.SGP,
           scores: item.score,
           NOTE: item.note,
-          
         };
         return temp;
-      })
+      });
     },
-
   },
 
-  methods:{
-    search(){
+  methods: {
+    search() {
+      // 中間有含空格，代表要雙重搜尋。
+      this.isDoubleSearch = this.searchContent.trim().indexOf(" ") !== -1;
 
-       // 兩個空白、return
-       if (!this.searchContent.trim() && !this.searchContent_points) {
+      console.log("isDoubleSearch", this.isDoubleSearch);
+
+      // 兩個空白、return
+      if (!this.searchContent.trim() && !this.searchContent_points) {
         console.log("兩個空白: StopSearching");
         alert("請搜尋名稱或者分數..");
+        return;
+      }
+
+      // 單搜 title + subTitle雙重搜尋
+      else if (this.isDoubleSearch && !this.searchContent_points) {
+        let [title, subTitle] = this.searchContent.trim().split(" ");
+
+        this.matched_Points = null;
+        this.matched_Title = null;
+        this.matched_Points = this.searchContent_points;
+        this.matched_Title = this.searchContent;
+        let filterList = [];
+
+        this.funDataList.forEach((item) => {
+          let temp = item.mainTitle.toLowerCase();
+          let temp2 = item.subTitle.toLowerCase();
+
+          if (
+            temp.indexOf(title.toLowerCase()) != -1 &&
+            temp2.indexOf(subTitle) != -1
+          ) {
+            filterList.push(item);
+          }
+        });
+        this.rendering = filterList;
+
+        this.searched = true;
+        return;
+      }
+
+      // 名稱雙重搜尋不可再搜分數
+      else if (this.isDoubleSearch && this.searchContent_points) {
+        alert("名稱雙重搜尋不支援搜尋分數");
         return;
       }
 
@@ -244,11 +289,11 @@ export default {
         this.matched_Points = this.searchContent_points;
         let filterList = [];
 
-        this.funDataList.forEach( (item) =>{
-          if(Number(item.points) == Number(this.searchContent_points)){
-            filterList.push(item)
+        this.funDataList.forEach((item) => {
+          if (Number(item.points) == Number(this.searchContent_points)) {
+            filterList.push(item);
           }
-        })
+        });
         this.rendering = filterList;
       }
 
@@ -261,19 +306,16 @@ export default {
         this.matched_Title = this.searchContent;
         let filterList = [];
 
-        this.funDataList.forEach( (item) =>{
-
+        this.funDataList.forEach((item) => {
           let temp = item.mainTitle.toLowerCase();
 
-          if(temp.indexOf(this.searchContent.toLowerCase()) != -1){
-            filterList.push(item)
+          if (temp.indexOf(this.searchContent.toLowerCase()) != -1) {
+            filterList.push(item);
           }
-        })
+        });
 
         this.rendering = filterList;
-
       }
-
       // 搜名稱、與分數
       else if (this.searchContent.trim() && this.searchContent_points) {
         this.matched_Points = null;
@@ -282,66 +324,56 @@ export default {
         this.matched_Points = this.searchContent_points;
         this.matched_Title = this.searchContent;
         let filterList = [];
-
-        this.funDataList.forEach( (item) =>{
-
+        this.funDataList.forEach((item) => {
           let temp = item.mainTitle.toLowerCase();
-
-          if(temp.indexOf(this.searchContent.toLowerCase()) != -1 && Number(item.points) == Number(this.searchContent_points)){
-
-            filterList.push(item)
-
+          if (
+            temp.indexOf(this.searchContent.toLowerCase()) != -1 &&
+            Number(item.points) == Number(this.searchContent_points)
+          ) {
+            filterList.push(item);
           }
-        })
+        });
         this.rendering = filterList;
       }
 
-      
       //搜尋過
       this.searched = true;
-
     },
 
     // 隨機取五個。
-    getRandom(){
-      
+    getRandom() {
       let randomItems = [];
 
-      for( let i=0; i< 5; i++){
-        let ranNumber = Math.floor(Math.random()*this.funDataList.length);
-        randomItems.push(this.funDataList[ranNumber])
+      for (let i = 0; i < 5; i++) {
+        let ranNumber = Math.floor(Math.random() * this.funDataList.length);
+        randomItems.push(this.funDataList[ranNumber]);
       }
       this.rendering = randomItems;
     },
 
-    openModal(title, note){
+    openModal(title, note) {
       this.modalTitle = title;
       this.modalNote = note;
-      $('#exampleModal').modal('show');
+      $("#exampleModal").modal("show");
     },
-    addToLocalStorage(item){
-      this.$store.dispatch('ADD_LOVED_LIST', item);
-      alert('已加入')
-    }
+
+    addToLocalStorage(item) {
+      this.$store.dispatch("ADD_LOVED_LIST", item);
+      alert("已加入");
+    },
   },
 
-  created(){
-    // this.$store.dispatch('GET_LOCAL_DATA');
-
-    this.$store.dispatch("GET_JSON_DATA").then((data)=>{
-       
-       setTimeout(()=>{
-         this.getRandom();
-       },2000)
-    })
-
+  mounted() {
+    this.$store.dispatch("GET_JSON_DATA").then((data) => {
+      setTimeout(() => {
+        this.getRandom();
+      }, 2000);
+    });
   },
-
 };
 </script>
 
-<style >
-
+<style>
 .card {
   padding: 5px;
   margin-bottom: 15px;
@@ -353,8 +385,8 @@ export default {
   box-shadow: 0px 2px 10px rgba(0, 46, 161, 0.7);
 }
 
-.bg-Main{
- background-color: #669ccc;
+.bg-Main {
+  background-color: #669ccc;
 }
 
 .title {
@@ -375,7 +407,7 @@ export default {
   color: #121212;
 }
 
-.modealText{
+.modealText {
   font-size: 20px;
   font-weight: bolder;
   text-align: left;
@@ -390,62 +422,62 @@ export default {
 }
 
 img:hover {
-  transform: scale(1.25);
+  transform: scale(1.1);
   transition: 0.2s;
 }
 
-.addBtn{
-  border:none;
+.addBtn {
+  border: none;
   text-decoration: none;
   border-radius: 200px;
   font-size: 0.75rem;
   padding: 5px;
   background: white;
 }
-.addBtn:hover{
+.addBtn:hover {
   background: green;
   color: white;
 }
 
-.carousel-container{
+.carousel-container {
   display: flex;
 }
 
-.carousel{
+.carousel {
   height: 70vh;
   width: 50%;
 }
 
-.carousel-list{
+.carousel-list {
   width: 35%;
   padding: 0 2rem;
   list-style: none;
   text-align: start;
 }
 
-.each-carousel{
+.each-carousel {
   font-size: 1.5rem;
-  padding:0.5rem;
+  padding: 0.5rem;
   border-bottom: 2px solid white;
 }
 
-.swiper{
+.swiper {
   width: 100%;
   height: 70%;
 }
 
-.carousel img{
+.carousel img {
   height: 80%;
 }
 
-@media (max-width:768px){
-    .carousel{
-      height: 70vh;
-      width: 100%;
-    }
-
-    .carousel-list{
-      display: none;
-    }
+@media (max-width: 768px) {
+  .carousel {
+    height: 70vh;
+    width: 100%;
   }
+
+  .carousel-list {
+    display: none;
+  }
+}
 </style>
